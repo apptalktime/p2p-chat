@@ -1,15 +1,16 @@
 import styled from "styled-components";
 
 interface MsgBalloonProps extends React.HTMLAttributes<HTMLDivElement> {
-  isOwn: boolean;
-  bg: string;
+  isOwn: boolean
 }
 
-export const MsgBalloon = ({ isOwn, bg, ...props }: MsgBalloonProps) => {
-  const Balloon = styled.div`
+const balloonMeColor = "#0284c7";
+const balloonYouColor = "#374151";
+
+const Balloon = styled.div`
     position: relative;
-    ${isOwn ? "margin-right: 10px;" : "margin-left: 10px;"}
-    background-color: ${bg};
+    ${props => props.className?.split(' ').includes('me') ? "margin-right: 10px;" : "margin-left: 10px;"}
+    background-color: ${props => props.className?.split(' ').includes('me') ? balloonMeColor : balloonYouColor};
     &:after {
       content: "";
       display: block;
@@ -19,14 +20,14 @@ export const MsgBalloon = ({ isOwn, bg, ...props }: MsgBalloonProps) => {
       position: absolute;
       bottom: -10px;
       left: 50%;
-      ${isOwn ? `
+      ${props => props.className?.split(' ').includes('me') ? `
       left: auto;
       right: -8px;
       top: auto;
       bottom: 1px;
       border-width: 5px;
       margin: 0;
-      border-color: ${bg} transparent transparent ${bg};
+      border-color: ${balloonMeColor} transparent transparent ${balloonMeColor};
       ` : `
       right: auto;
       left: -8px;
@@ -34,9 +35,11 @@ export const MsgBalloon = ({ isOwn, bg, ...props }: MsgBalloonProps) => {
       bottom: 1px;
       border-width: 5px;
       margin: 0;
-      border-color: ${bg} ${bg} transparent transparent;
+      border-color: ${balloonYouColor} ${balloonYouColor} transparent transparent;
       `};
     }
   `;
-  return <Balloon {...props} />;
+
+export const MsgBalloon = ({ isOwn, ...props }: MsgBalloonProps) => {
+  return <Balloon {...props} className={`${isOwn ? 'me' : ''} ${props.className}`} />;
 }
