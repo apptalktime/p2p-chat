@@ -27,7 +27,7 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
 
     defaultConfig: OrbitConfig = {};
 
-    constructor (identity: Identity, ipfsApiUrl: string) {
+    constructor(identity: Identity, ipfsApiUrl: string) {
         super();
         this.identity = identity;
         this.ipfs = create({ url: ipfsApiUrl });
@@ -40,9 +40,13 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
             type: "ethereum",
             wallet,
         });
-    } 
+    }
 
     public async init(name: string, writers: string[], type: TStoreType, meta?: Record<any, any>): Promise<Store> {
+
+        if (this.store) {
+            throw new Error("Store already initialized");
+        }
 
         this.db = await OrbitDB.createInstance(this.ipfs, { identity: this.identity });
 
@@ -63,20 +67,6 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
 
         await this.store.load();
 
-        this.store.events.on('ready', () => {
-            console.log("is Ready!")
-        });
-
-        // Listen for updates from peers
-        this.store.events.on("replicated", hash => {
-            console.log('replicated:', hash)
-            this.sync();
-        });
-
-        this.store.events.on('replicate.progress', (address, hash, entry, progress, have) => {
-            console.log("Replicate on Progress", address, hash, entry, progress, have)
-        });
-
         this.store.events.on('peer', (peer) => {
             console.log("new peer connected: " + peer)
         })
@@ -90,15 +80,14 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
             this.sync();
         });
 
-        this.store.events.on("replicated", () => {
-            console.log("replicated here")
+        this.store.events.on("replicated", async (e, a, c) => {
+            console.log("replicated", e, a, c)
+            this.sync();
         });
 
-        const entries = await this.collect();
+        console.log("Orbit database connected:", this.store.address.toString());
 
-        if (entries.length > 0) {
-            this.update({ entries });
-        }
+        this.sync();
 
         return this.store;
     }
@@ -135,12 +124,14 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
         return (this.store as any).iterator({ limit }).collect();
     }
 
-    public async sync () {
+    public async sync() {
         if (!this.db) {
             throw new Error("DB not initialized");
         }
         const entries = await this.collect();
-        this.update({ entries });
+        if (entries !== this.state.entries) {
+            this.update({ entries });
+        }
     }
 
     public async collectFrom(hash: string) {
