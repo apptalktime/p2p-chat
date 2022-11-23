@@ -1,7 +1,7 @@
 import { ChatHeader } from "./ChatHeader";
 import { ChatInputBox } from "./ChatInputBox";
 import { Messages } from "./Messages";
-import { Message } from '@/types'
+import { Message } from '@/types';
 import Image from "next/image";
 
 interface ChatProps {
