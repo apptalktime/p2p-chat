@@ -30,7 +30,7 @@ const entriesToMessages = (entries: LogEntry<any>[], myIdentityId: string): Mess
             message,
             type: "message",
             timestamp,
-            you: entry.identity.id === myIdentityId,
+            me: entry.identity.id === myIdentityId,
         }
     });
 }
@@ -105,6 +105,6 @@ export function useMesseger(identity: Identity, to: string): MessegerContextValu
     if (!configure) throw new Error('useMesseger must be used within a MessegerProvider');
     useEffect(() => {
         configure(identity, to);
-    }, [identity, to]);
+    }, []);
     return { from, to, messages, database, isLoading, configure, send };
 }

@@ -3,5 +3,5 @@ export interface Message {
     type: string;
     message: string;
     timestamp: number;
-    you: boolean;
+    me: boolean;
 }

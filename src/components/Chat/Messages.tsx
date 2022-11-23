@@ -18,10 +18,10 @@ export function Messages({ messages }: MessagesProps) {
                 {messages.map((msg, index) => (
                     <li key={msg.id} className={classNames(
                         'w-full flex',
-                        msg.you ? 'justify-end' : 'justify-start',
-                        (index === 0 || (messages[index - 1].you && msg.you) || (!messages[index - 1].you && !msg.you)) ? 'mt-1' : 'mt-3'
+                        msg.me ? 'justify-end' : 'justify-start',
+                        (index === 0 || (messages[index - 1].me && msg.me) || (!messages[index - 1].me && !msg.me)) ? 'mt-1' : 'mt-3'
                     )}>
-                        <MsgBalloon isOwn={msg.you} bg={msg.you ? '#0284c7' : '#374151'} className="text-white rounded px-2 py-1">
+                        <MsgBalloon isOwn={msg.me} className="text-white rounded px-2 py-1">
                             {msg.type === 'message' ? (
                                 <div className="text-sm text-gray-50">
                                     <div>{msg.message}</div>
