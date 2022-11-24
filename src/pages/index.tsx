@@ -1,11 +1,14 @@
 import { useIdentity } from "@/providers/Identity";
-import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/20/solid";
+import { ArrowRightOnRectangleIcon, ChatBubbleOvalLeftEllipsisIcon, ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import makeBlockie from "ethereum-blockies-base64";
 import Router from "next/router";
 import { useForm } from "react-hook-form";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { useEffect, useState } from "react";
 
 export default function Home() {
     const { identity, signout } = useIdentity();
+    const [copied, setCopied] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -13,25 +16,54 @@ export default function Home() {
         await Router.push(`/chat/${destination}`);
     }
 
+    useEffect(() => {
+        if (copied) {
+            setTimeout(() => {
+                setCopied(false);
+            }, 2000);
+        }
+    }, [copied]);
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
-            <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center max-w-2xl">
-                <div className="flex items-center space-x-2">
-                    <img src={makeBlockie(identity?.id as string)} className="w-8 h-8 rounded-full" />
-                    <p className="text-sm font-semibold">
+            <main className="w-full flex flex-col items-center justify-center px-4 text-center max-w-2xl">
+                <div className="w-96 max-w-full flex flex-col items-center justify-center space-y-1 space-x-2">
+                    <img src={makeBlockie(identity?.id as string)} className="w-12 h-12 rounded-full" />
+                    <p className="text-sm font-medium">
                         {identity?.id}
                     </p>
-                    <button className="text-sm font-semibold text-blue-500 hover:text-blue-700">
-                        Copy
-                    </button>
-                    <button
-                        onClick={() => signout()}
-                        className="text-sm font-semibold text-red-500 hover:text-red-700"
-                    >
-                        SignOut
-                    </button>
+                    <div className="w-full flex justify-center space-x-8">
+                        <CopyToClipboard
+                            text={identity?.id as string}
+                            onCopy={() => setCopied(true)}
+                        >
+                            <div className="flex space-x-1 w-20 text-sm font-semibold text-sky-500 hover:text-sky-700 cursor-pointer">
+                                {
+                                    copied ? (
+                                        <>
+                                            <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                                            <span>Copied!</span>
+                                        </>
+
+                                    ) : (
+                                        <>
+                                            <ClipboardDocumentIcon className="w-5 h-5" />
+                                            <span>Copy</span>
+                                        </>
+                                    )
+                                }
+                            </div>
+                        </CopyToClipboard>
+                        <button
+                            onClick={() => signout()}
+                            className="flex space-x-1 text-sm font-semibold text-red-500 hover:text-red-700"
+                        >
+                            <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                            <span>SignOut</span>
+                        </button>
+                    </div>
                 </div>
-                <form className="mt-8 space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
+                <form className="mt-8 space-y-4 w-96 max-w-full" onSubmit={handleSubmit(onSubmit)}>
                     <div>
                         <label htmlFor="destination" className="sr-only">
                             Destination Key
