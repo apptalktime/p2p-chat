@@ -6,3 +6,5 @@ export interface Message {
     me: boolean;
     remove?: () => void;
 }
+
+export type HeroIconType = (props: React.ComponentProps<'svg'> & { title?: string, titleId?: string }) => JSX.Element;
