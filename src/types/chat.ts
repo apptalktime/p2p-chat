@@ -4,4 +4,5 @@ export interface Message {
     message: string;
     timestamp: number;
     me: boolean;
+    remove?: () => void;
 }

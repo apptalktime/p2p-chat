@@ -19,7 +19,7 @@ interface MessegerProviderProps {
 
 const MessegerContext = createContext({} as MessegerContextValues);
 
-const entriesToMessages = (entries: LogEntry<any>[], myIdentityId: string): Message[] => {
+const entriesToMessages = (entries: LogEntry<any>[], myIdentityId: string, orbit: OrbitController): Message[] => {
     return entries.map((entry: any) => {
         const value = entry.payload.value;
         const isObject = typeof value === 'object';
@@ -31,6 +31,7 @@ const entriesToMessages = (entries: LogEntry<any>[], myIdentityId: string): Mess
             type: "message",
             timestamp,
             me: entry.identity.id === myIdentityId,
+            remove: () => orbit.remove(entry.hash)
         }
     });
 }
@@ -55,12 +56,12 @@ export function MessegerProvider({ children }: MessegerProviderProps) {
             });
             orbit.subscribe((state) => {
                 if (state.entries) {
-                    const messages = entriesToMessages(state.entries, from);
+                    const messages = entriesToMessages(state.entries, from, orbit);
                     setMessages(messages);
                 }
             });
             const from = store.identity.id;
-            const messages = entriesToMessages(orbit.state.entries, from);
+            const messages = entriesToMessages(orbit.state.entries, from, orbit);
             setOrbit(orbit);
             setTo(to);
             setFrom(from);

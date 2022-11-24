@@ -117,6 +117,18 @@ class OrbitController extends BaseController<OrbitConfig, OrbitState> {
         return await (this.store as any).add(content);
     }
 
+    public async remove(hash: string) {
+        if (!this.db) {
+            throw new Error("DB not initialized");
+        }
+        if (this.store?.type !== "feed") {
+            throw new Error("Only feed type databases allow removal");
+        }
+        console.log("Removing entry", hash);
+        await (this.store as any).remove(hash);
+        await this.sync();
+    }
+
     public async collect(limit = -1): Promise<any[]> {
         if (!this.db) {
             throw new Error("DB not initialized");
