@@ -17,9 +17,10 @@ interface PopoverListButtonProps {
     align?: 'left' | 'right';
     onOpen?: () => void;
     onClose?: () => void;
+    onSelected?: (option: Option) => void;
 }
 
-export default function MessageOptions({ children, options, align, onOpen, onClose }: PopoverListButtonProps) {
+export default function MessageOptions({ children, options, align, onOpen, onClose, onSelected }: PopoverListButtonProps) {
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -71,6 +72,7 @@ export default function MessageOptions({ children, options, align, onOpen, onClo
                                             onClick={() => {
                                                 item.onSelect && item.onSelect();
                                                 close();
+                                                onSelected && onSelected(item);
                                             }}
                                             className="flex items-start px-3 py-2 transition duration-150 ease-in-out hover:bg-gray-200 cursor-pointer"
                                         >

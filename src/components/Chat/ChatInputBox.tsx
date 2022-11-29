@@ -41,7 +41,7 @@ export function ChatInputBox({ initialMsg, onMsgChange, onSend }: ChatInputBoxPr
   }
 
   return (
-    <div className="w-full bg-gray-800">
+    <div className="w-full bg-gray-100 border-t border-x border-gray-200">
       <form action="#" className="relative">
         <div className="flex justify-between items-center py-2 space-x-2 sm:space-x-4 lg:space-x-8">
 
@@ -57,7 +57,7 @@ export function ChatInputBox({ initialMsg, onMsgChange, onSend }: ChatInputBoxPr
             </button>
           </div>
 
-          <div className="w-full flex items-end overflow-hidden pr-1 rounded-lg bg-gray-700 text-white border border-gray-600 shadow-sm focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+          <div className="w-full flex items-end overflow-hidden pr-1 rounded-lg bg-gray-300 text-gray-900 border border-gray-300 shadow-sm focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
             <TextareaAutosize
               minRows={1}
               maxRows={MAX_TEXTAREA_ROWS}
