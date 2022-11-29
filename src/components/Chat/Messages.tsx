@@ -14,34 +14,32 @@ interface MessagesProps {
     messages: Message[];
 }
 
+const createOptions = (msg: Message) => {
+    const options = [];
+    options.push({
+        name: 'Copy',
+        description: 'Copy the message to clipboard',
+        icon: ClipboardIcon,
+        onSelect: () => {
+            navigator.clipboard.writeText(msg.message);
+        }
+    });
+    if (msg.remove && typeof msg.remove === 'function') {
+        options.push({
+            name: 'Delete',
+            description: "Delete message from this chat",
+            icon: TrashIcon,
+            onSelect: () => {
+                msg.remove && msg.remove();
+            }
+        });
+    }
+    return options;
+}
+
 export function Messages({ messages }: MessagesProps) {
 
     const [selectedMsg, setSelectedMsg] = useState<number | null>(null);
-
-    const createOptions = (msg: Message) => {
-        const options = [];
-        options.push({
-            name: 'Copy',
-            description: 'Copy the message to clipboard',
-            icon: ClipboardIcon,
-            onSelect: () => {
-                navigator.clipboard.writeText(msg.message);
-                setSelectedMsg(null);
-            }
-        });
-        if (msg.remove && typeof msg.remove === 'function') {
-            options.push({
-                name: 'Delete',
-                description: "Delete message from this chat",
-                icon: TrashIcon,
-                onSelect: () => {
-                    msg.remove && msg.remove();
-                    setSelectedMsg(null);
-                }
-            });
-        }
-        return options;
-    }
 
     return (
         <div className={classNames(
@@ -51,9 +49,9 @@ export function Messages({ messages }: MessagesProps) {
         >
             <ul role="list">
                 {messages.map((msg, index) => (
-                    <li key={msg.id} className={classNames(
+                    <li key={index} className={classNames(
                         'w-full flex px-2',
-                        msg.me ? 'justify-end' : 'justify-start',
+                        msg.me ? 'justify-end pl-16' : 'justify-start pr-16',
                         (index === 0 || (messages[index - 1].me && msg.me) || (!messages[index - 1].me && !msg.me)) ? 'mt-1' : 'mt-3',
                         (selectedMsg !== null && selectedMsg !== index) ? 'blur-md' : '',
                     )}
@@ -63,6 +61,7 @@ export function Messages({ messages }: MessagesProps) {
                             align={msg.me ? 'right' : 'left'}
                             onOpen={() => setSelectedMsg(index)}
                             onClose={() => setSelectedMsg(null)}
+                            onSelected={() => setSelectedMsg(null)}
                         >
                             <MsgBalloon
                                 isOwn={msg.me}
@@ -84,17 +83,6 @@ export function Messages({ messages }: MessagesProps) {
                                 ) : null}
                             </MsgBalloon>
                         </MessageOptions>
-                        {/* {
-                            index === 0 && (
-                                <div className="fixed -mt-2 -mr-2">
-                                    <div className='w-64 h-64 bg-red-500'>
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                            {msg.type === 'message' ? 'Message' : 'Unknown'}
-                                        </span>
-                                    </div>
-                                </div>
-                            )
-                        } */}
                     </li>
                 ))}
             </ul>
